@@ -5,7 +5,6 @@ import img from "../assets/image.jpg";
 const PatientSignin = () => {
   return (
     <div className="flex h-screen w-screen bg-gray-100 relative">
-      {/* Hospital Sign In Button */}
       <div className="absolute top-8 right-8">
         <Link 
           to="/hospitalSignin" 
@@ -41,12 +40,13 @@ const PatientSignin = () => {
               required 
               className="w-full p-3 mb-4 border border-gray-300 rounded"
             />
-            <button 
+            {/* <button 
               type="submit" 
               className="w-full p-3 bg-blue-600 text-white rounded hover:bg-blue-700"
             >
               Sign In
-            </button>
+            </button> */}
+            <Link to='/patientDashboard'>SignIn</Link>
           </form>
           <div className="text-center mt-4">
             <p>Don't have an account?</p>
