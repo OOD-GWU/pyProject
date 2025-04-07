@@ -8,6 +8,7 @@ const ShowAppointment = () => {
 
   const token = import.meta.env.VITE_CALENDLY_ACCESS_TOKEN;
 
+  // Fetch invitee details by event ID
   const fetchInviteeDetails = async (eventId) => {
     try {
       const response = await axios.get(
@@ -41,6 +42,7 @@ const ShowAppointment = () => {
     }
   };
 
+  // Fetch events from the Calendly API
   const fetchEvents = async () => {
     try {
       const userResponse = await axios.get('https://api.calendly.com/users/me', {
@@ -62,6 +64,7 @@ const ShowAppointment = () => {
 
       const rawEvents = eventsResponse.data.collection;
 
+      // Add invitee details to the events
       const eventsWithInvitees = await Promise.all(
         rawEvents.map(async (event) => {
           const eventId = event.uri.split('/').pop();
@@ -83,9 +86,17 @@ const ShowAppointment = () => {
   };
 
   useEffect(() => {
+    // Retrieve email from local storage
+    // const storedEmail = localStorage.getItem('userEmail');
+    const storedEmail = 'advaitnurani@gwu.edu'
+    if (storedEmail) {
+      setFilterEmail(storedEmail);
+    }
+    
     fetchEvents();
   }, []);
 
+  // Filter events based on invitee email
   const filteredEvents = events.filter(event =>
     event.inviteeEmail.toLowerCase().includes(filterEmail.toLowerCase())
   );
@@ -94,17 +105,9 @@ const ShowAppointment = () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-4xl font-bold mb-6">All Appointments</h1>
+      <h1 className="text-4xl font-bold mb-6">My Appointments</h1>
 
-      <div className="mb-6">
-        <input
-          type="text"
-          placeholder="Filter by invitee email"
-          value={filterEmail}
-          onChange={(e) => setFilterEmail(e.target.value)}
-          className="p-2 border rounded w-full max-w-md"
-        />
-      </div>
+      {/* Email filter input is now removed as it is fetched from localStorage */}
 
       {filteredEvents.length === 0 ? (
         <p>No events found for this email.</p>
@@ -113,7 +116,7 @@ const ShowAppointment = () => {
           {filteredEvents.map((event) => (
             <li key={event.uri} className="mb-4 border-b pb-4">
               <p><strong>Event:</strong> {event.name}</p>
-              <p><strong>Start Time:</strong> {event.start_time}</p>
+              <p><strong>Appointment Time:</strong> {event.start_time}</p>
               <p><strong>End Time:</strong> {event.end_time}</p>
               <p><strong>Invitee Name:</strong> {event.inviteeName}</p>
               <p><strong>Invitee Email:</strong> {event.inviteeEmail}</p>

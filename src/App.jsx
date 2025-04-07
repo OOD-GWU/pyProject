@@ -4,8 +4,8 @@ import PatientSignUp from "./pages/PatientSignUp"
 import Signin from "./pages/SignIn"
 import PatientDashboard from "./pages/PatientDashboard"
 import DoctorDashboard from "./pages/DoctorDashboard"
-import CalendlyEvents from "./pages/CalendlyEvents"
 import AdminDashboard from "./pages/AdminDashboard"
+import Nurse from "./pages/Nurse"
 
 function App() {
 
@@ -17,7 +17,7 @@ function App() {
       <Route path="/patientDashboard" element={<PatientDashboard />} />
       <Route path="/doctorDashboard" element={<DoctorDashboard />} />
       <Route path="/admin" element={<AdminDashboard />} />
-      <Route path="/calendy" element={<CalendlyEvents />} />
+      <Route path="/nurse" element={<Nurse />} />
     </Routes>
   )
 }
