@@ -50,8 +50,6 @@ const CalendlyEvents = () => {
       });
 
       const userUri = userResponse.data.resource.uri;
-
-      // 2. Get Scheduled Events
       const eventsResponse = await axios.get(
         `https://api.calendly.com/scheduled_events?user=${userUri}`,
         {
@@ -63,7 +61,6 @@ const CalendlyEvents = () => {
 
       const rawEvents = eventsResponse.data.collection;
 
-      // 3. Add invitee name and email to each event
       const eventsWithInvitees = await Promise.all(
         rawEvents.map(async (event) => {
           const eventId = event.uri.split('/').pop();

@@ -1,118 +1,125 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const PatientSignUp = () => {
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    name: "",
     email: "",
     phone: "",
-    dob: "",
+    age: "",
     gender: "",
     password: "",
     confirmPassword: "",
+    phone:0
   });
 
   const [errors, setErrors] = useState({});
+  const navigate = useNavigate();
 
   const validate = () => {
     const newErrors = {};
-
-    // Name validation
-    if (!formData.firstName.trim()) newErrors.firstName = "First name is required";
-    if (!formData.lastName.trim()) newErrors.lastName = "Last name is required";
-
-    // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!formData.email) {
-      newErrors.email = "Email is required";
-    } else if (!emailRegex.test(formData.email)) {
-      newErrors.email = "Invalid email address";
-    }
-
-    // Phone number validation (basic format check)
     const phoneRegex = /^[0-9]{10}$/;
-    if (!formData.phone) {
-      newErrors.phone = "Phone number is required";
-    } else if (!phoneRegex.test(formData.phone)) {
-      newErrors.phone = "Invalid phone number (should be 10 digits)";
-    }
 
-    // Date of birth validation (must be at least 18 years old)
-    const dob = new Date(formData.dob);
-    const age = new Date().getFullYear() - dob.getFullYear();
-    if (!formData.dob) {
-      newErrors.dob = "Date of birth is required";
-    } else if (age < 18) {
-      newErrors.dob = "You must be at least 18 years old";
-    }
+    if (!formData.name.trim()) newErrors.name = "Name is required";
 
-    // Gender validation
+    if (!formData.email) newErrors.email = "Email is required";
+    else if (!emailRegex.test(formData.email)) newErrors.email = "Invalid email";
+
+    if (!formData.phone) newErrors.phone = "Phone number is required";
+    else if (!phoneRegex.test(formData.phone)) newErrors.phone = "Must be 10 digits";
+
+    if (!formData.age) newErrors.age = "Age is required";
+    else if (parseInt(formData.age) < 18) newErrors.age = "Must be at least 18 years old";
+
     if (!formData.gender) newErrors.gender = "Gender is required";
 
-    // Password validation
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-    } else if (formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
-    }
+    if (!formData.password) newErrors.password = "Password is required";
+    else if (formData.password.length < 6) newErrors.password = "Min 6 characters";
 
-    // Confirm password validation
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = "Please confirm your password";
-    } else if (formData.confirmPassword !== formData.password) {
+    if (!formData.confirmPassword) newErrors.confirmPassword = "Confirm your password";
+    else if (formData.confirmPassword !== formData.password)
       newErrors.confirmPassword = "Passwords do not match";
-    }
 
     setErrors(newErrors);
-
     return Object.keys(newErrors).length === 0;
   };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: "" }); // clear error on change
+    setErrors({ ...errors, [e.target.name]: "" });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!validate()) return;
 
-    console.log("Form submitted:", formData);
-    // Add logic to handle form submission (e.g., API call)
+    const patientData = {
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
+      gender: formData.gender,
+      age: parseInt(formData.age),
+      phone: formData.phone,
+    };
+
+    try {
+      const response = await fetch("http://localhost:5000/auth/signup", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(patientData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        Swal.fire({
+          icon: "success",
+          title: "Account Created!",
+          text: "Patient registration successful",
+          confirmButtonText: "Login Now",
+        }).then(() => {
+          navigate("/");
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Signup Failed",
+          text: data.error || "Something went wrong",
+        });
+      }
+    } catch (error) {
+      console.error("Signup error:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Could not connect to server",
+      });
+    }
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <div className="bg-white p-6 rounded-lg shadow-md w-3/4">
-        <h2 className="text-center text-2xl font-bold mb-8">Patient Sign up</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-2 gap-8">
-            <div>
-              <input
-                type="text"
-                name="firstName"
-                placeholder="First Name"
-                value={formData.firstName}
-                onChange={handleChange}
-                required
-                className={`w-full p-3 border ${errors.firstName ? "border-red-500" : "border-gray-300"} rounded`}
-              />
-              {errors.firstName && <p className="text-red-500 text-sm">{errors.firstName}</p>}
-            </div>
-            <div>
-              <input
-                type="text"
-                name="lastName"
-                placeholder="Last Name"
-                value={formData.lastName}
-                onChange={handleChange}
-                required
-                className={`w-full p-3 border ${errors.lastName ? "border-red-500" : "border-gray-300"} rounded`}
-              />
-              {errors.lastName && <p className="text-red-500 text-sm">{errors.lastName}</p>}
-            </div>
+    <div className="flex justify-center items-center min-h-screen bg-gray-100 px-4">
+      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl">
+        <h2 className="text-center text-3xl font-bold mb-8 text-blue-700">Patient Sign Up</h2>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <input
+              type="text"
+              name="name"
+              placeholder="Full Name"
+              value={formData.name}
+              onChange={handleChange}
+              className={`w-full p-3 border ${errors.name ? "border-red-500" : "border-gray-300"} rounded`}
+            />
+            {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+          </div>
 
+          <div className="grid grid-cols-2 gap-6">
             <div>
               <input
                 type="email"
@@ -120,12 +127,10 @@ const PatientSignUp = () => {
                 placeholder="Email"
                 value={formData.email}
                 onChange={handleChange}
-                required
                 className={`w-full p-3 border ${errors.email ? "border-red-500" : "border-gray-300"} rounded`}
               />
-              {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+              {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
             </div>
-
             <div>
               <input
                 type="tel"
@@ -133,22 +138,21 @@ const PatientSignUp = () => {
                 placeholder="Phone Number"
                 value={formData.phone}
                 onChange={handleChange}
-                required
                 className={`w-full p-3 border ${errors.phone ? "border-red-500" : "border-gray-300"} rounded`}
               />
-              {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
+              {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
             </div>
 
             <div>
               <input
-                type="date"
-                name="dob"
-                value={formData.dob}
+                type="number"
+                name="age"
+                placeholder="Age"
+                value={formData.age}
                 onChange={handleChange}
-                required
-                className={`w-full p-3 border ${errors.dob ? "border-red-500" : "border-gray-300"} rounded`}
+                className={`w-full p-3 border ${errors.age ? "border-red-500" : "border-gray-300"} rounded`}
               />
-              {errors.dob && <p className="text-red-500 text-sm">{errors.dob}</p>}
+              {errors.age && <p className="text-red-500 text-sm mt-1">{errors.age}</p>}
             </div>
 
             <div>
@@ -156,15 +160,13 @@ const PatientSignUp = () => {
                 name="gender"
                 value={formData.gender}
                 onChange={handleChange}
-                required
                 className={`w-full p-3 border ${errors.gender ? "border-red-500" : "border-gray-300"} rounded`}
               >
                 <option value="">Select Gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
+                <option value="male">M</option>
+                <option value="female">F</option>
               </select>
-              {errors.gender && <p className="text-red-500 text-sm">{errors.gender}</p>}
+              {errors.gender && <p className="text-red-500 text-sm mt-1">{errors.gender}</p>}
             </div>
 
             <div>
@@ -174,12 +176,10 @@ const PatientSignUp = () => {
                 placeholder="Password"
                 value={formData.password}
                 onChange={handleChange}
-                required
                 className={`w-full p-3 border ${errors.password ? "border-red-500" : "border-gray-300"} rounded`}
               />
-              {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
+              {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
             </div>
-
             <div>
               <input
                 type="password"
@@ -187,18 +187,19 @@ const PatientSignUp = () => {
                 placeholder="Confirm Password"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                required
                 className={`w-full p-3 border ${errors.confirmPassword ? "border-red-500" : "border-gray-300"} rounded`}
               />
-              {errors.confirmPassword && <p className="text-red-500 text-sm">{errors.confirmPassword}</p>}
+              {errors.confirmPassword && (
+                <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>
+              )}
             </div>
           </div>
 
           <button
             type="submit"
-            className="w-full mt-8 p-3 bg-green-600 text-white rounded hover:bg-green-700"
+            className="w-full mt-6 p-3 bg-green-600 text-white rounded hover:bg-green-700 transition"
           >
-            Signup
+            Sign Up
           </button>
         </form>
       </div>
