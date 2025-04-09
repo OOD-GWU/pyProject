@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 const PatientBilling = () => {
   const [bills, setBills] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState("all"); // all | paid | unpaid
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,14 +32,49 @@ const PatientBilling = () => {
     fetchBills();
   }, []);
 
+  // Filtered list based on toggle
+  const filteredBills = bills.filter((bill) => {
+    if (filter === "paid") return bill.status === "paid";
+    if (filter === "unpaid") return bill.status === "unpaid";
+    return true;
+  });
+
   return (
     <div className="p-10 min-h-screen bg-gray-50 flex flex-col items-center">
-      <h2 className="text-3xl font-bold text-green-700 mb-8">Your Billing History</h2>
+      <h2 className="text-3xl font-bold text-green-700 mb-6">Your Billing History</h2>
+
+      {/* Filter Buttons */}
+      <div className="mb-6 space-x-4">
+        <button
+          className={`px-4 py-2 rounded-md ${
+            filter === "all" ? "bg-green-600 text-white" : "bg-gray-200 text-gray-700"
+          }`}
+          onClick={() => setFilter("all")}
+        >
+          All
+        </button>
+        <button
+          className={`px-4 py-2 rounded-md ${
+            filter === "paid" ? "bg-green-600 text-white" : "bg-gray-200 text-gray-700"
+          }`}
+          onClick={() => setFilter("paid")}
+        >
+          Paid
+        </button>
+        <button
+          className={`px-4 py-2 rounded-md ${
+            filter === "unpaid" ? "bg-green-600 text-white" : "bg-gray-200 text-gray-700"
+          }`}
+          onClick={() => setFilter("unpaid")}
+        >
+          Unpaid
+        </button>
+      </div>
 
       {loading ? (
         <p className="text-lg text-gray-600">Loading bills...</p>
-      ) : bills.length === 0 ? (
-        <p className="text-gray-500 text-lg">No bills available.</p>
+      ) : filteredBills.length === 0 ? (
+        <p className="text-gray-500 text-lg">No {filter} bills available.</p>
       ) : (
         <div className="w-full max-w-3xl bg-white shadow-lg rounded-lg overflow-hidden mb-10">
           <table className="min-w-full table-auto">
@@ -46,13 +82,21 @@ const PatientBilling = () => {
               <tr>
                 <th className="px-6 py-4 text-left">Description</th>
                 <th className="px-6 py-4 text-left">Amount</th>
+                <th className="px-6 py-4 text-left">Status</th>
               </tr>
             </thead>
             <tbody className="text-gray-700">
-              {bills.map((bill) => (
+              {filteredBills.map((bill) => (
                 <tr key={bill._id} className="border-b hover:bg-gray-100 transition">
                   <td className="px-6 py-3">{bill.description}</td>
                   <td className="px-6 py-3">$ {bill.amount}</td>
+                  <td className="px-6 py-3">
+                    {bill.status=="paid" ? (
+                      <span className="text-green-600 font-medium">Paid</span>
+                    ) : (
+                      <span className="text-red-500 font-medium">Unpaid</span>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
