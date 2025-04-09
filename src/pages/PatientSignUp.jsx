@@ -6,7 +6,6 @@ const PatientSignUp = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    phone: "",
     age: "",
     gender: "",
     password: "",
