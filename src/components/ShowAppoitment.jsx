@@ -4,11 +4,10 @@ import axios from 'axios';
 const ShowAppointment = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filterEmail, setFilterEmail] = useState('');
+  const [userEmail, setUserEmail] = useState('');
 
   const token = import.meta.env.VITE_CALENDLY_ACCESS_TOKEN;
 
-  // Fetch invitee details by event ID
   const fetchInviteeDetails = async (eventId) => {
     try {
       const response = await axios.get(
@@ -19,9 +18,7 @@ const ShowAppointment = () => {
           },
         }
       );
-
       const invitees = response.data.collection;
-
       if (invitees.length > 0) {
         return {
           email: invitees[0].email,
@@ -42,13 +39,10 @@ const ShowAppointment = () => {
     }
   };
 
-  // Fetch events from the Calendly API
-  const fetchEvents = async () => {
+  const fetchEvents = async (userEmail) => {
     try {
       const userResponse = await axios.get('https://api.calendly.com/users/me', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       const userUri = userResponse.data.resource.uri;
@@ -56,15 +50,12 @@ const ShowAppointment = () => {
       const eventsResponse = await axios.get(
         `https://api.calendly.com/scheduled_events?user=${userUri}`,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
       const rawEvents = eventsResponse.data.collection;
 
-      // Add invitee details to the events
       const eventsWithInvitees = await Promise.all(
         rawEvents.map(async (event) => {
           const eventId = event.uri.split('/').pop();
@@ -85,20 +76,29 @@ const ShowAppointment = () => {
     }
   };
 
-  useEffect(() => {
-    // Retrieve email from local storage
-    // const storedEmail = localStorage.getItem('userEmail');
-    const storedEmail = 'advaitnurani@gwu.edu'
-    if (storedEmail) {
-      setFilterEmail(storedEmail);
+  const fetchLoggedInUser = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/auth/me", {
+        credentials: "include",
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setUserEmail(data.user.email);
+        fetchEvents(data.user.email);
+      } else {
+        console.error(data.error || "Failed to get user email");
+      }
+    } catch (err) {
+      console.error("Error fetching user info:", err);
     }
-    
-    fetchEvents();
+  };
+
+  useEffect(() => {
+    fetchLoggedInUser();
   }, []);
 
-  // Filter events based on invitee email
   const filteredEvents = events.filter(event =>
-    event.inviteeEmail.toLowerCase().includes(filterEmail.toLowerCase())
+    event.inviteeEmail.toLowerCase().includes(userEmail.toLowerCase())
   );
 
   if (loading) return <p>Loading...</p>;
@@ -106,8 +106,7 @@ const ShowAppointment = () => {
   return (
     <div className="p-4">
       <h1 className="text-4xl font-bold mb-6">My Appointments</h1>
-
-      {/* Email filter input is now removed as it is fetched from localStorage */}
+      {userEmail && <p className="mb-4 text-gray-600">Logged in as: <strong>{userEmail}</strong></p>}
 
       {filteredEvents.length === 0 ? (
         <p>No events found for this email.</p>
