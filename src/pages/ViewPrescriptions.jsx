@@ -31,29 +31,30 @@ const ViewPrescriptions = () => {
   }, []);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 pt-20 px-4">
-      <div className="bg-white p-8 rounded-2xl shadow-md w-full max-w-5xl">
-        <h2 className="text-2xl font-semibold mb-6 text-center text-blue-700">Prescriptions</h2>
+    <div className="min-h-screen bg-gray-100 pt-24 px-6">
+      <div className="bg-white p-8 rounded-2xl shadow-md w-full max-w-6xl mx-auto">
+        <h2 className="text-3xl font-bold text-center text-blue-700 mb-8">Prescriptions</h2>
+
         {loading ? (
-          <p className="text-center">Loading prescriptions...</p>
+          <p className="text-center text-gray-500">Loading prescriptions...</p>
         ) : prescriptions.length === 0 ? (
           <p className="text-center text-gray-500">No prescriptions available.</p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full bg-white border">
+            <table className="min-w-full border border-gray-200 rounded-xl overflow-hidden">
               <thead>
-                <tr className="bg-gray-200 text-left">
-                  <th className="py-2 px-4">Patient Email</th>
-                  <th className="py-2 px-4">Doctor Email</th>
-                  <th className="py-2 px-4">Details</th>
+                <tr className="bg-blue-100 text-blue-800">
+                  <th className="py-3 px-6 text-left text-sm font-semibold">Patient Email</th>
+                  <th className="py-3 px-6 text-left text-sm font-semibold">Doctor Email</th>
+                  <th className="py-3 px-6 text-left text-sm font-semibold">Details</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="text-gray-700 text-sm">
                 {prescriptions.map((p, idx) => (
-                  <tr key={idx} className="border-b hover:bg-gray-50">
-                    <td className="py-2 px-4">{p.patient_email}</td>
-                    <td className="py-2 px-4">{p.doctor_email}</td>
-                    <td className="py-2 px-4">{p.details}</td>
+                  <tr key={idx} className="hover:bg-gray-50 even:bg-gray-50">
+                    <td className="py-3 px-6">{p.patient_email}</td>
+                    <td className="py-3 px-6">{p.doctor_email}</td>
+                    <td className="py-3 px-6">{p.details}</td>
                   </tr>
                 ))}
               </tbody>
