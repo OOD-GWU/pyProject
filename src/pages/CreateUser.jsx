@@ -32,7 +32,7 @@ const CreateUser = () => {
     };
 
     try {
-      const res = await fetch("http://localhost:5000/auth/create-user", {
+      const res = await fetch("http://localhost:5001/auth/create-user", {
         method: "POST",
         credentials: "include",
         headers: {

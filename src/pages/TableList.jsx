@@ -8,7 +8,7 @@ const TableList = ({ role }) => {
   const [loading, setLoading] = useState(true);
 
   const fetchUsers = async () => {
-    const res = await fetch(`http://localhost:5000/auth/all/${role}`, {
+    const res = await fetch(`http://localhost:5001/auth/all/${role}`, {
       credentials: 'include',
     });
     const data = await res.json();
@@ -17,7 +17,7 @@ const TableList = ({ role }) => {
 
   const fetchLoggedInUserRole = async () => {
     try {
-      const res = await fetch('http://localhost:5000/auth/me', {
+      const res = await fetch('http://localhost:5001/auth/me', {
         credentials: 'include',
       });
       const data = await res.json();
@@ -45,7 +45,7 @@ const TableList = ({ role }) => {
     });
 
     if (confirm.isConfirmed) {
-      const res = await fetch('http://localhost:5000/auth/delete-user', {
+      const res = await fetch('http://localhost:5001/auth/delete-user', {
         method: 'DELETE',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

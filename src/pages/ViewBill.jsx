@@ -9,7 +9,7 @@ const ViewBills = () => {
   useEffect(() => {
     const fetchBills = async () => {
       try {
-        const response = await fetch('http://localhost:5000/bill/all', {
+        const response = await fetch('http://localhost:5001/bill/all', {
           method: 'GET',
           credentials: 'include'
         });
@@ -34,7 +34,7 @@ const ViewBills = () => {
 
   const markAsPaid = async (billId) => {
     try {
-      const response = await fetch(`http://localhost:5000/bill/${billId}/status`, {
+      const response = await fetch(`http://localhost:5001/bill/${billId}/status`, {
         method: 'PUT',
         credentials: 'include',
         headers: {

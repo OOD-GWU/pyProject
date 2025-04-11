@@ -1,5 +1,4 @@
 import { Route, Routes, useLocation } from "react-router-dom";
-import PatientSignin from "./pages/PatientSignIn";
 import PatientSignUp from "./pages/PatientSignUp";
 import Signin from "./pages/SignIn";
 import PatientDashboard from "./pages/PatientDashboard";
@@ -16,6 +15,7 @@ import CreateBill from "./pages/CreateBill";
 import ViewBill from "./pages/ViewBill";
 import Prescription from "./pages/Prescription";
 import ViewPrescriptions from "./pages/ViewPrescriptions";
+import CalendlyEvents from "./pages/CalendlyEvents";
 
 function App() {
   const location = useLocation();
@@ -41,6 +41,7 @@ function App() {
         <Route path="/viewbills" element={<ViewBill />} />
         <Route path="/prescription" element={<Prescription />} />
         <Route path="/viewprescriptions" element={<ViewPrescriptions />} />
+        <Route path="/appointments" element={<CalendlyEvents />} />
       </Routes>
     </>
   );

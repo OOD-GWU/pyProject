@@ -78,7 +78,7 @@ const ShowAppointment = () => {
 
   const fetchLoggedInUser = async () => {
     try {
-      const response = await fetch("http://localhost:5000/auth/me", {
+      const response = await fetch("http://localhost:5001/auth/me", {
         credentials: "include",
       });
       const data = await response.json();

@@ -10,7 +10,7 @@ const PatientBilling = () => {
   useEffect(() => {
     const fetchBills = async () => {
       try {
-        const response = await fetch("http://localhost:5000/bill", {
+        const response = await fetch("http://localhost:5001/bill", {
           method: "GET",
           credentials: "include",
         });

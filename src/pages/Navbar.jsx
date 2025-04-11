@@ -5,7 +5,7 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    await fetch("http://localhost:5000/auth/logout", {
+    await fetch("http://localhost:5001/auth/logout", {
       method: "POST",
       credentials: "include"
     });

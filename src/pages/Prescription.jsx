@@ -23,7 +23,7 @@ const AddPrescription = () => {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/prescriptions", {
+      const res = await fetch("http://localhost:5001/prescriptions", {
         method: "POST",
         credentials: "include",
         headers: {
